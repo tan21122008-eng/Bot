@@ -1,19 +1,45 @@
+import os
+import discord
+from discord.ext import commands
 from flask import Flask
 from threading import Thread
 
+# 1. Cấu hình Web Server để giữ bot không bị Render ngắt
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot vẫn đang hoạt động!" # Thông báo khi Render ping tới
+    return "Bot đang chạy bình thường!"
 
 def run():
-    app.run(host='0.0.0.0', port=8080)
+    # Render chỉ định cổng qua biến môi trường PORT, nếu không có thì mặc định 8080
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
 
 def keep_alive():
-bot.run('TOKEN_CUA_BAN')
     t = Thread(target=run)
     t.start()
+
+# 2. Khởi tạo Bot
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'Bot đã đăng nhập thành công: {bot.user}')
+
+# --- Đặt các câu lệnh (commands) của bạn ở đây ---
+
+# 3. Chạy cả Web Server và Bot
+if __name__ == "__main__":
+    keep_alive()
+    # Token phải được thiết lập trong Settings -> Environment trên Render
+    token = os.environ.get('DISCORD_BOT_TOKEN')
+    if token:
+        bot.run(token)
+    else:
+        print("Lỗi: Không tìm thấy DISCORD_BOT_TOKEN trong biến môi trường!")
 import os
 import sys
 import math
