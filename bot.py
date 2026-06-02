@@ -20,26 +20,6 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# 2. Khởi tạo Bot
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
-
-@bot.event
-async def on_ready():
-    print(f'Bot đã đăng nhập thành công: {bot.user}')
-
-# --- Đặt các câu lệnh (commands) của bạn ở đây ---
-
-# 3. Chạy cả Web Server và Bot
-if __name__ == "__main__":
-    keep_alive()
-    # Token phải được thiết lập trong Settings -> Environment trên Render
-    token = os.environ.get('DISCORD_BOT_TOKEN')
-    if token:
-        bot.run(token)
-    else:
-        print("Lỗi: Không tìm thấy DISCORD_BOT_TOKEN trong biến môi trường!")
 import os
 import sys
 import math
