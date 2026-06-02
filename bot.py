@@ -1,3 +1,19 @@
+from flask import Flask
+from threading import Thread
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot vẫn đang hoạt động!" # Thông báo khi Render ping tới
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+bot.run('TOKEN_CUA_BAN')
+    t = Thread(target=run)
+    t.start()
 import os
 import sys
 import math
