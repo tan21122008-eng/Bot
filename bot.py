@@ -20,22 +20,6 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# --- PHẦN CODE BOT CỦA BẠN ---
-# (Dán các hàm và lệnh khởi tạo bot của bạn vào đây)
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
-
-@bot.event
-async def on_ready():
-    print(f'Bot đã online!')
-
-# --- CHẠY ---
-if __name__ == "__main__":
-    keep_alive() # Khởi động web server
-    bot.run(os.environ.get('DISCORD_BOT_TOKEN')) # Chạy bot
-
-
 import os
 import sys
 import math
