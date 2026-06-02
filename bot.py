@@ -1,24 +1,40 @@
+# --- CÁC LỆNH IMPORT PHẢI Ở DÒNG ĐẦU TIÊN ---
 import os
 import discord
 from discord.ext import commands
 from flask import Flask
 from threading import Thread
 
-# 1. Cấu hình Web Server để giữ bot không bị Render ngắt
+# --- CẤU HÌNH WEB SERVER ---
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot đang chạy bình thường!"
+    return "Bot đang chạy!"
 
 def run():
-    # Render chỉ định cổng qua biến môi trường PORT, nếu không có thì mặc định 8080
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
 def keep_alive():
     t = Thread(target=run)
     t.start()
+
+# --- PHẦN CODE BOT CỦA BẠN ---
+# (Dán các hàm và lệnh khởi tạo bot của bạn vào đây)
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'Bot đã online!')
+
+# --- CHẠY ---
+if __name__ == "__main__":
+    keep_alive() # Khởi động web server
+    bot.run(os.environ.get('DISCORD_BOT_TOKEN')) # Chạy bot
+
 
 import os
 import sys
