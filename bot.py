@@ -452,16 +452,21 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-token = os.environ.get("DISCORD_BOT_TOKEN")
-if not token:
-    logging.critical("DISCORD_BOT_TOKEN chưa được thiết lập. Bot dừng lại.")
+# ⭐ THAY DÒNG NÀY BẰNG TOKEN CỦA BẠN
+DISCORD_BOT_TOKEN = "MTUxMDcwODY4NjMzNzYwNTcxNA.GXdB3E.g0ueyENEAooBJEzSqjuV_tG8NrkF3jXo1fouu4"  # ← Thay token vào đây
+
+token = os.environ.get("DISCORD_BOT_TOKEN") or DISCORD_BOT_TOKEN
+
+if not token or token == "MTUxMDcwODY4NjMzNzYwNTcxNA.GXdB3E.g0ueyENEAooBJEzSqjuV_tG8NrkF3jXo1fouu4":
+    logging.critical("❌ DISCORD_BOT_TOKEN chưa được thiết lập. Bot dừng lại.")
     sys.exit(1)
 
 try:
+    print("🚀 Bot đang khởi động...")
     bot.run(token)
 except discord.LoginFailure:
-    logging.critical("Token không hợp lệ. Kiểm tra lại DISCORD_BOT_TOKEN.")
+    logging.critical("❌ Token không hợp lệ. Kiểm tra lại DISCORD_BOT_TOKEN.")
     sys.exit(1)
 except Exception as e:
-    logging.critical(f"Bot dừng do lỗi không xử lý được: {e}", exc_info=True)
+    logging.critical(f"❌ Bot dừng do lỗi không xử lý được: {e}", exc_info=True)
     sys.exit(1)
