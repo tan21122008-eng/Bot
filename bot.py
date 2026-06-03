@@ -1,20 +1,24 @@
 from flask import Flask
 
 import threading
+import time
 
 app = Flask(__name__)
 
 @app.route("/")
-
 def home():
-
     return "Bot đang chạy!"
 
 def run_web():
+    # Chạy Flask ở chế độ production-like (không debug)
+    app.run(host="0.0.0.0", port=10000, debug=False, use_reloader=False)
 
-    app.run(host="0.0.0.0", port=10000)
-
-threading.Thread(target=run_web).start()
+# Khởi động Flask trong thread riêng TRƯỚC khi chạy bot
+print("🌐 Khởi động Flask web server...")
+flask_thread = threading.Thread(target=run_web, daemon=True)
+flask_thread.start()
+time.sleep(1)  # Chờ Flask khởi động xong
+print("✅ Flask đã khởi động trên port 10000")
 
 import os
 import sys
