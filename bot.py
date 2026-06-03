@@ -453,7 +453,7 @@ logging.basicConfig(
 )
 
 # ⭐ THAY DÒNG NÀY BẰNG TOKEN CỦA BẠN
-DISCORD_BOT_TOKEN = "MTUxMDcwODY4NjMzNzYwNTcxNA.GXdB3E.g0ueyENEAooBJEzSqjuV_tG8NrkF3jXo1fouu4"  # ← Thay token vào đây
+DISCORD_BOT_TOKEN = "token_mới_của_bạn_ở_đây"  # Token mới từ bước 1
 
 token = os.environ.get("DISCORD_BOT_TOKEN") or DISCORD_BOT_TOKEN
 
