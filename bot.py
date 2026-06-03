@@ -1,28 +1,20 @@
-# --- CÁC LỆNH IMPORT PHẢI Ở DÒNG ĐẦU TIÊN ---
-import os
-import discord
-from discord.ext import commands
 from flask import Flask
-from threading import Thread
 
-# --- CẤU HÌNH WEB SERVER ---
-app = Flask('')
+import threading
 
-@app.route('/')
+app = Flask(__name__)
+
+@app.route("/")
+
 def home():
+
     return "Bot đang chạy!"
 
-def run():
-    import os
-port = int(os.environ.get("PORT", 10000))
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=port)
+def run_web():
 
+    app.run(host="0.0.0.0", port=10000)
 
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-
+threading.Thread(target=run_web).start()
 import os
 import sys
 import math
