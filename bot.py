@@ -231,17 +231,15 @@ async def refresh_cache():
 # ─── Lệnh tra giá ────────────────────────────────────────────────────────────
 
 
-@bot.command(name="gia", aliases=["kiemtra", "check", "price", "value"])
+@bot@bot.command(name="gia", aliases=["kiemtra", "check", "price", "value"])
 async def check_item(ctx, *, item_name: str | None = None):
     if not item_name:
-        e = discord.Embed(description="❌ Bạn chưa nhập tên vật phẩm!\n👉 Ví dụ: `!gia Attack Serum`", color=0xE74C3C)
-        await ctx.send(embed=e)
+        await ctx.send(embed=build_error_embed("Bạn chưa nhập tên vật phẩm!\n👉 Ví dụ: `!gia Attack Serum`"))
         return
 
     item = find_item(item_name)
     if not item:
-        e = discord.Embed(description=f"❌ Không tìm thấy **{item_name}**.\n💡 Dùng `!banggia` để duyệt toàn bộ {len(item_cache)} vật phẩm.", color=0xE74C3C)
-        await ctx.send(embed=e)
+        await ctx.send(embed=build_error_embed(f"Không tìm thấy **{item_name}**.\n💡 Dùng `!banggia` để duyệt toàn bộ {len(item_cache)} vật phẩm."))
         return
 
     await ctx.send(embed=build_embed(item))
@@ -250,16 +248,28 @@ async def check_item(ctx, *, item_name: str | None = None):
 @bot.command(name="timkiem", aliases=["search", "tim"])
 async def cmd_search(ctx, *, query: str | None = None):
     if not query:
-        e = discord.Embed(description="❌ Bạn chưa nhập từ khoá!\n👉 Ví dụ: `!timkiem Serum`", color=0xE74C3C)
-        await ctx.send(embed=e)
+        await ctx.send(embed=build_error_embed("Bạn chưa nhập từ khoá!\n👉 Ví dụ: `!timkiem Serum`"))
         return
 
     results = search_items(query)
     if not results:
-        e = discord.Embed(description=f"❌ Không tìm thấy vật phẩm nào khớp với **{query}**.", color=0xE74C3C)
-        await ctx.send(embed=e)
+        await ctx.send(embed=build_error_embed(f"Không tìm thấy vật phẩm nào khớp với **{query}**."))
         return
 
+    lines = []
+    for i, item in enumerate(results, 1):
+        viz = float(item["value"])
+        scrolls = viz * VIZ_TO_SCROLLS
+        roc = item.get("rate_of_change") or ""
+        icon = {"Rising": "📈", "Falling": "📉", "Overpriced": "⚠️"}.get(roc, "➡️")
+        lines.append(
+            f"`{i:>2}.` {icon} **{item['name']}**\n"
+            f"      💎 {fmt_viz(viz)} viz  •  📜 {fmt_scrolls(scrolls)} scroll"
+        )
+
+    embed = build_info_embed(title=f"🔍  Kết Quả: \"{query}\"  ({len(results)} vật phẩm)")
+    embed.description = "\n".join(lines)
+    await ctx.send(embed=embed)
     lines = []
     for i, item in enumerate(results, 1):
         viz = float(item["value"])
@@ -352,21 +362,20 @@ class ValuesView(discord.ui.View):
 @bot.command(name="banggia", aliases=["danhsach", "vatpham", "values", "list"])
 async def cmd_values(ctx, *, category: str | None = None):
     if not item_cache:
-        e = discord.Embed(description="⏳ Đang tải dữ liệu, vui lòng thử lại sau giây lát.", color=0xF1C40F)
-        await ctx.send(embed=e)
+        await ctx.send(embed=build_warning_embed("⏳ Đang tải dữ liệu, vui lòng thử lại sau giây lát."))
         return
 
     items = item_cache
     title = ""
     if category:
-        items = [
-            i for i in items if (i.get("category") or "").lower() == category.lower()
-        ]
+        items = [i for i in items if (i.get("category") or "").lower() == category.lower()]
         if not items:
-            e = discord.Embed(description=f"❌ Không tìm thấy phân loại **{category}**.\n📂 Gõ `!phanloai` để xem danh sách.", color=0xE74C3C)
-            await ctx.send(embed=e)
+            await ctx.send(embed=build_error_embed(f"Không tìm thấy phân loại **{category}**.\n📂 Gõ `!phanloai` để xem danh sách."))
             return
         title = f"📦  {category}  ({len(items)} vật phẩm)"
+
+    view = ValuesView(items, ctx.author.id, title=title)
+    await ctx.send(embed=view.make_embed(), view=view)
 
     view = ValuesView(items, ctx.author.id, title=title)
     await ctx.send(embed=view.make_embed(), view=view)
