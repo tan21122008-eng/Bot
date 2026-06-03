@@ -171,12 +171,10 @@ def build_embed(item: dict) -> discord.Embed:
         color=ROC_COLOR.get(roc, 0xC4A04A),
     )
 
-    # Thumbnail
     thumb = get_thumbnail(item)
     if thumb:
         embed.set_thumbnail(url=thumb)
 
-    # ── Table: core stats ─────────────────────────────
     tax_label = ""
     if item.get("gem_tax"):
         tax_label = f"{item['gem_tax']:,} 💜"
@@ -452,13 +450,12 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-# ⭐ THAY DÒNG NÀY BẰNG TOKEN CỦA BẠN
-DISCORD_BOT_TOKEN = "MTUxMDcwODY4NjMzNzYwNTcxNA.GEHtVb.ZcbumFYs6Rux-NJMazulXqgA-68dts5WiSoWh0"  # Token mới từ bước 1
+# ✅ LẤY TOKEN TỪ ENVIRONMENT VARIABLE (AN TOÀN - KHÔNG LỘ)
+token = os.environ.get("DISCORD_BOT_TOKEN")
 
-token = os.environ.get("DISCORD_BOT_TOKEN") or DISCORD_BOT_TOKEN
-
-if not token or token == "MTUxMDcwODY4NjMzNzYwNTcxNA.GXdB3E.g0ueyENEAooBJEzSqjuV_tG8NrkF3jXo1fouu4":
+if not token:
     logging.critical("❌ DISCORD_BOT_TOKEN chưa được thiết lập. Bot dừng lại.")
+    logging.critical("⚠️  Hãy set environment variable trước khi chạy bot!")
     sys.exit(1)
 
 try:
