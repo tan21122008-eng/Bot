@@ -203,6 +203,24 @@ def build_embed(item: dict) -> discord.Embed:
     return embed
 
 
+def build_error_embed(message: str) -> discord.Embed:
+    """Tạo embed lỗi duy nhất"""
+    return discord.Embed(description=f"❌ {message}", color=0xE74C3C)
+
+
+def build_warning_embed(message: str) -> discord.Embed:
+    """Tạo embed cảnh báo duy nhất"""
+    return discord.Embed(description=message, color=0xF1C40F)
+
+
+def build_info_embed(title: str, description: str = "", color: int = 0xC4A04A) -> discord.Embed:
+    """Tạo embed thông tin duy nhất"""
+    embed = discord.Embed(title=title, color=color)
+    if description:
+        embed.description = description
+    return embed
+
+
 # ─── Sự kiện bot ─────────────────────────────────────────────────────────────
 
 
@@ -231,7 +249,7 @@ async def refresh_cache():
 # ─── Lệnh tra giá ────────────────────────────────────────────────────────────
 
 
-@bot@bot.command(name="gia", aliases=["kiemtra", "check", "price", "value"])
+@bot.command(name="gia", aliases=["kiemtra", "check", "price", "value"])
 async def check_item(ctx, *, item_name: str | None = None):
     if not item_name:
         await ctx.send(embed=build_error_embed("Bạn chưa nhập tên vật phẩm!\n👉 Ví dụ: `!gia Attack Serum`"))
@@ -268,23 +286,6 @@ async def cmd_search(ctx, *, query: str | None = None):
         )
 
     embed = build_info_embed(title=f"🔍  Kết Quả: \"{query}\"  ({len(results)} vật phẩm)")
-    embed.description = "\n".join(lines)
-    await ctx.send(embed=embed)
-    lines = []
-    for i, item in enumerate(results, 1):
-        viz = float(item["value"])
-        scrolls = viz * VIZ_TO_SCROLLS
-        roc = item.get("rate_of_change") or ""
-        icon = {"Rising": "📈", "Falling": "📉", "Overpriced": "⚠️"}.get(roc, "➡️")
-        lines.append(
-            f"`{i:>2}.` {icon} **{item['name']}**\n"
-            f"      💎 {fmt_viz(viz)} viz  •  📜 {fmt_scrolls(scrolls)} scroll"
-        )
-
-    embed = discord.Embed(
-        title=f"🔍  Kết Quả: \"{query}\"  ({len(results)} vật phẩm)",
-        color=0xC4A04A,
-    )
     embed.description = "\n".join(lines)
     await ctx.send(embed=embed)
 
@@ -377,14 +378,11 @@ async def cmd_values(ctx, *, category: str | None = None):
     view = ValuesView(items, ctx.author.id, title=title)
     await ctx.send(embed=view.make_embed(), view=view)
 
-    view = ValuesView(items, ctx.author.id, title=title)
-    await ctx.send(embed=view.make_embed(), view=view)
-
 
 @bot.command(name="phanloai", aliases=["loai", "categories", "cats"])
 async def cmd_categories(ctx):
     cats = sorted({i.get("category") for i in item_cache if i.get("category")})
-    embed = discord.Embed(title="📂  Danh Sách Phân Loại", color=0xC4A04A)
+    embed = build_info_embed(title="📂  Danh Sách Phân Loại")
     embed.description = "\n".join(f"• **{c}**" for c in cats)
     await ctx.send(embed=embed)
 
@@ -392,7 +390,7 @@ async def cmd_categories(ctx):
 @bot.command(name="top", aliases=["xephang"])
 async def cmd_top(ctx, count: int = 10):
     count = min(max(count, 1), 25)
-    embed = discord.Embed(
+    embed = build_info_embed(
         title=f"🏆  Top {count} Vật Phẩm Giá Trị Nhất",
         color=0xFFD700,
     )
@@ -409,10 +407,9 @@ async def cmd_top(ctx, count: int = 10):
 
 @bot.command(name="huongdan", aliases=["lenh", "trogiup", "aotr", "help"])
 async def cmd_help(ctx):
-    embed = discord.Embed(
+    embed = build_info_embed(
         title="⚔️  AOTR Value Bot — Hướng Dẫn",
         description="Bot tra giá vật phẩm Attack on Titan Revolution",
-        color=0xC4A04A,
     )
     embed.add_field(
         name="🔍  !gia <tên vật phẩm>",
